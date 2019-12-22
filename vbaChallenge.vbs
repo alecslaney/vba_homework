@@ -67,7 +67,7 @@ ws.Activate
 
     ' This statement stores the first opening value of the year for the stock
     If (Cells(i - 1, 1).Value <> Cells(i, 1).Value) Then
-        tickerYearOpen = Cells(i, 3).Value
+      tickerYearOpen = Cells(i, 3).Value
     End If
 
     If Cells(i + 1, 1).Value <> Cells(i, 1).Value Then
@@ -90,7 +90,7 @@ ws.Activate
       ' Print Yearly Change in the summary table
       ws.Range("J" & summaryTable).Value = tickerYearClose - tickerYearOpen
 
-      ' Print Percent Change in the summary table.
+      ' Print and format Percent Change in the summary table.
       If tickerYearClose = 0 And tickerYearOpen = 0 Then
         ws.Range("K" & summaryTable).Value = "0%" ' There was no change: prints 0% accordingly
         ws.Range("J" & summaryTable).Interior.ColorIndex = 2
@@ -100,45 +100,44 @@ ws.Activate
       Else
         percentChange = ((tickerYearClose - tickerYearOpen) / tickerYearClose) * 100
         ws.Range("K" & summaryTable).Value = percentChange & "%" ' Standard percent change calculation
-        
+
+        If ws.Range("K" & summaryTable).Value < 0 Then
+          ws.Range("J" & summaryTable).Interior.ColorIndex = 3
+          Else
+            ws.Range("J" & summaryTable).Interior.ColorIndex = 4
+        End If
+
         'Determines and stores largest percent increase/decrease in summary table
         If percentChange > 0 Then
           If percentChange > largestPosChange Then
-          largestPosChange = percentChange
-          largestPosTicker = ticker
-          ws.Range("P2").Value = largestPosTicker
-          ws.Range("Q2").Value = largestPosChange & "%"
+            largestPosChange = percentChange
+            largestPosTicker = ticker
+            ws.Range("P2").Value = largestPosTicker
+            ws.Range("Q2").Value = largestPosChange & "%"
           End If
         End If
 
         If percentChange < 0 Then
           If percentChange < largestNegChange Then
-          largestNegChange = percentChange
-          largestNegTicker = ticker
-          ws.Range("P3").Value = largestNegTicker
-          ws.Range("Q3").Value = largestNegChange & "%"
+            largestNegChange = percentChange
+            largestNegTicker = ticker
+            ws.Range("P3").Value = largestNegTicker
+            ws.Range("Q3").Value = largestNegChange & "%"
           End If
         End If
-
-        If ws.Range("K" & summaryTable).Value < 0 Then
-          ws.Range("J" & summaryTable).Interior.ColorIndex = 3
-        Else
-        ws.Range("J" & summaryTable).Interior.ColorIndex = 4
-        End If
-
       End If
-      
-      ' Add one to the summary table row
-      summaryTable = summaryTable + 1
       
       ' Checks if the total stock volume is the largest summed so far. If it is, update the tracker.
       If tickerTotal > largestTotal Then
-      largestTotal = tickerTotal
-      largestTicker = ticker
-      ws.Range("P4").Value = largestTicker
-      ws.Range("Q4").Value = largestTotal
+        largestTotal = tickerTotal
+        largestTicker = ticker
+        ws.Range("P4").Value = largestTicker
+        ws.Range("Q4").Value = largestTotal
       End If
       
+      ' Add one row to the summary table
+      summaryTable = summaryTable + 1
+
       ' Reset the stock volume total
       tickerTotal = 0
 
